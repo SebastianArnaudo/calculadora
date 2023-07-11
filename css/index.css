@@ -36,7 +36,7 @@ body{
     margin-bottom: 5%;
     font-family: monospace;
     font-weight: 600;
-    box-shadow: 3px 2px #000413;
+    box-shadow: 3px 0 2px #000413;
 }
 
 .btn{
