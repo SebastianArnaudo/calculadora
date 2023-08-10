@@ -1,60 +1,138 @@
-const screen = document.querySelector(".screen"); //llamamos a la pantalla
-const buttons = document.querySelectorAll(".btn"); //llamamos a los botones
+const operation = document.getElementById("operation"); //Seccion de la pantalla que muestra la operacion.
+const result = document.getElementById("result"); //Seccion de la pantalla que muestra el resultado de la operacion.
+const buttons = document.getElementById("buttons"); //llamamos a los botones.
 
-buttons.forEach(button => {
+//estado de la operacion.
+let oComplete = false;
 
-    //Utilizando la función “forEach” agregamos un eventListener “click” a los botones.
-    button.addEventListener("click",() =>{
+function lastValue(){
+    //Guarda el ultimo elemento de la cadena guardada en "operation".
+    const lv= operation.textContent.slice(-1);
+    return lv;
+};
 
-        //Guardamos el "contenido" del botón clicado en una constante más fácil de evaluar.
-        const clickbutton = button.textContent; 
+function writeOperation(text){
+    
+    //Si el contenido de la constante "operation" es “0”.
+    //Se remplazara por el contenido del botón clicado.  
+    if(operation.textContent == "0" && text != "."){
+        operation.textContent = "";
+    };
+    
+    //Si la operacion esta concluida y se ingresa un simbolo matematico
+    //El resultado de la operacion pasa a ser parte de una nueva operacion.
+    //Y se cambia el estado de la operacion de completo a incompleto.
+    if (oComplete && isNaN(text)){
+        operation.textContent = result.textContent;
+        oComplete= false;
+    };
+    //Si la operacion esta terminada e ingresamos un numero.
+    //Se reinicia tanto el resultado como la operacion, iniciando una nueva.
+    if (oComplete==true && isNaN(text)==false){
+        operation.textContent = "";
+        result.textContent="0";
+        oComplete=false;
+    };
+
+    //Si el ultimo elemento de la cadena guardada en "operation" no es un valor numerico.
+    //Y tampoco lo es el contenido del boton clicado, eliminara el ultimo elemento de la cadena.
+    //Y lo remplazamos por el por el valor del boton clicado.
+    if(isNaN(lastValue()) && isNaN(text) && lastValue()!==")"){
+        operation.textContent = operation.textContent.slice(0,-1);
+        operation.textContent += text;
+    }
+    else{
+        operation.textContent += text;
+    }
+
+    //Si los digitos de la cuenta son mas de 14 se detiene toda operacion.
+    if(operation.textContent.length>14){
+        operation.textContent = "Demasiados digitos"
+        operation.textContent = operation.textContent.slice(0,-1)
+        result.textContent = "Error!";
+    }
+};
+
+function writeResult(){
+    try {
+        //Usaremos la función “eval” 
+        //Que evalúa un conjunto de String.
+        //Si el mismo es una operaciones matemáticas,
+        //lo tratará como tal y ejecutará la operación.
+        //Transformando el contenido de “result”
+        // en el resultado de la operación guardada en "operation".
+        if(isNaN(lastValue()) && lastValue()!==")"){
+            operation.textContent= operation.textContent.slice(0,-1)
+            result.textContent = eval(operation.textContent);
+        }else{
+            result.textContent = eval(operation.textContent);
+        }
         
-        // Si el id del boton es “c” transformará el contenido de la constante “screen” en “0”.        
-        if(button.id=="c"){
-            screen.textContent = "0";
-            return
-        }
+    } catch {
+        result.textContent = "Error!";
+        //De no ser posible, el contenido se transformará en “Error!”.
+    };
+    
+    //Al mostrar el resultado de la operacion se da por concpliuda la misma.
+    oComplete= true;
+
+    //Se reduce el tamaño de fuente de "result" para que no sobresalga de la pantalla.
+    if(result.textContent.length>8){
+        result.style.fontSize="20px"
+    };
+};
+
+function changeSign(){
+    let lastN="";
+    let position = 0;
+
+    if(!isNaN(lastValue())){
+        for (let i = operation.textContent.length-1; i > 0; i--){
+            if(isNaN(operation.textContent[i])){
+                position = i + 1;
+                break;
+            };
+        };
+    };
+
+    lastN = operation.textContent.substring(position);
+    operation.textContent = operation.textContent.replace(lastN,`(-${lastN})`)
+
+};
+
+function delette(){
+    //Remplazará el vlaor de "operation" por “0” Si el de "result" es “Error!” 
+    //O su longitud es de 1 elemento.
+    if(operation.textContent.length ==1 || operation.textContent=="Error!"){
+        operation.textContent = "0";
+    }else{
+        operation.textContent = operation.textContent.slice(0,-1);
+        //De lo contrario borrará el último elemento.
+    };
+};
+
+function reset(){
+    //Restablece los valores de las constantes "operation" y Result a "0".
+    operation.textContent = "0";
+    result.textContent = "0"
+    return
+};
 
 
-        // Si el id del boton es “delete”
-        if(button.id=="delete"){
-            // Remplazará el vlaor de "screen" por “0” Si el mismo es “Error!” 
-            // o su longitud es de 1 elemento.
-            if(screen.textContent.length ==1 || screen.textContent=="Error!"){
-                screen.textContent = "0";
-            }else{
-                screen.textContent = screen.textContent.slice(0,-1);
-                //De lo contrario borrará el último elemento.
-            }
-            return
-        }
-        //Si el id del botón clicado es “equal” ...
-        if(button.id=="equal"){
-            
-            try {
-                //Usaremos la función “eval” 
-                //Que evalúa un conjunto de String.
-                //Si el mismo hay operaciones matemáticas,
-                //lo tratará como una cadena de números y ejecutará la operación.
-                //Transformando el contenido de “screen” en el resultado de dicha operación.
-                screen.textContent = eval(screen.textContent);
-            } catch {
-                screen.textContent = "Error!"
-                //De no ser posible, el contenido se transformará en “Error!”
-            }
-            
-            return
-        }
+buttons.addEventListener("click", e =>{
 
-        if(screen.textContent == "0" || screen.textContent=="Error!"){
-            screen.textContent = clickbutton;
-            //Si el contenido de la constante “screen” es “0” o “Error!”.
-            //Se remplazara por el contenido del botón clicado.  
-
-        } else{
-            screen.textContent += clickbutton;
-            //De lo contrario se sumara a su contenido el del botón clicado.
-        }
-        
-    })
-})
+    switch (e.target.textContent) {
+        case "C":
+            reset();break;
+        case "=":
+            writeResult();break;
+        case ",":
+            writeOperation(".");break;
+        case"←":
+            delette();break;
+        case"+/-":
+            changeSign();break;
+        default:
+            writeOperation(e.target.textContent);break;
+    };    
+});

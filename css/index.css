@@ -20,9 +20,6 @@ body{
     max-width: 100%;
     padding: 1.5rem;
     border-radius: 4%;
-    display: grid;
-    grid-template-columns: repeat(4,1fr);
-    gap: .5rem;
     box-shadow: 5px 5px #000413;
 }
 
@@ -39,7 +36,21 @@ body{
     box-shadow: 3px 0 2px #000413;
 }
 
+.screenResult{
+    font-size:50px;
+}
+
+.buttons{
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: .5rem;
+    pointer-events: none;
+}
+
 .btn{
+    pointer-events: all;
+    position: relative;
+    z-index: 100;
     color: white;
     background-color: #7840ad;
     border: 0;
@@ -66,20 +77,6 @@ body{
     box-shadow: none;
 }
 
-#action{
-    background-color:#c94c86;
-}
-
-#action:hover{
-    background-color: #a53d6e;
-    box-shadow: none;
-}
-
 #zero{
     grid-column: span 2;
 }
-
-#equal{
-    grid-row: span 2;
-}
-
